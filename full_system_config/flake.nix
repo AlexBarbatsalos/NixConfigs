@@ -13,8 +13,11 @@
           system = "x86_64-linux";
 
           modules = [
+            "${nixpkgs}/nixos/modules/profiles/amazon-image.nix"
             ./hosts/ec2-small.nix
           ];
+
+          
         };
 
         vmGUI = nixpkgs.lib.nixosSystem {
