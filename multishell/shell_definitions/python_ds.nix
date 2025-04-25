@@ -15,5 +15,9 @@ pkgs.mkShell {
     packages = python_ds;
     shellHook = ''
         export PS1="(python-ds) $PS1"
-        echo "Python data science shell"'';
+        echo "Python data science shell"
+
+        source ${./snippets/exit_gc.sh}
+        
+      '';
     }

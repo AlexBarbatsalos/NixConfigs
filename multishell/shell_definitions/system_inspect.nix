@@ -8,5 +8,8 @@ pkgs.mkShell {
   packages = systemDebugTools;
   shellHook = ''
     export PS1="(sysInspect) $PS1"
-    echo "System debug shell: fine-grained inspection tools ready"'';
+    echo "System debug shell: fine-grained inspection tools ready"
+    
+    source ${./snippets/exit_gc.sh}
+  '';
 }

@@ -9,5 +9,9 @@ pkgs.mkShell{
     packages = haskell_stack;
     shellHook = ''
         export PS1="(λ) $PS1"
-        echo "λ Haskell dev shell"'';
+        echo "λ Haskell dev shell"
+
+        source ${./snippets/exit_gc.sh}
+        
+    '';
     }

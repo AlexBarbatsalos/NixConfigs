@@ -9,5 +9,7 @@ pkgs.mkShell {
   shellHook = ''
     export PS1="(default) $PS1"
     echo "👋 Default dev shell"
+
+    source ${./snippets/exit_gc.sh}
   '';
 }

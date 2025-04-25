@@ -11,5 +11,7 @@ pkgs.mkShell {
   shellHook = ''
     export PS1="(full-debug) $PS1"
     echo "🛠️ Full debug shell: everything is ready!"
+
+    source ${./snippets/exit_gc.sh}
   '';
 }

@@ -9,5 +9,7 @@ pkgs.mkShell {
   shellHook = ''
     export PS1="(networking) $PS1"
     echo "🌐 Networking shell: all net tools loaded"
+
+    source ${./snippets/exit_gc.sh}
   '';
 }
