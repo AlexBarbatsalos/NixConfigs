@@ -18,3 +18,8 @@ error: The option virtualisation.amazonGuest' does not exist. Definition values:
        - In /nix/store/jl66fjrrblsnkpca6ni8cm461vcb97g3-source/hosts/ec2-small.nix':
 ```
 
+```json
+
+error: path '/nix/store/kcmmd6alr3lx56vkf72503h3pxgf6iv4-source/nixos/modules/profiles/amazon-image.nix' does not exist
+```
+

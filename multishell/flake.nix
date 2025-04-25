@@ -1,5 +1,5 @@
 {
-  description = "Multi-shell flake example";
+  description = "Modular multi-shell flake";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
@@ -10,23 +10,16 @@
         pkgs = import nixpkgs { inherit system; };
       in {
         devShells = {
-          default = pkgs.mkShell {
-            name = "default-shell";
-            packages = [ pkgs.neovim pkgs.git ];
-            shellHook = ''echo "👋 Default dev shell" '';
-          };
-
-          python-data = pkgs.mkShell {
-            name = "python-data-shell";
-            packages = [ pkgs.python3 pkgs.jupyterlab pkgs.pandas ];
-            shellHook = ''echo "🐍 Python data science shell" '';
-          };
-
-          haskell = pkgs.mkShell {
-            name = "haskell-dev-shell";
-            packages = [ pkgs.stack pkgs.git pkgs.ghc ];
-            shellHook = ''echo "Haskell dev shell" '';
-          };
+          default      = import "${self}/shell_definitions/default.nix"      { inherit pkgs; };
+          networking   = import "${self}/shell_definitions/networking.nix"   { inherit pkgs; };
+          system-debug = import "${self}/shell_definitions/system-debug.nix" { inherit pkgs; };
+          full-debug   = import "${self}/shell_definitions/full-debug.nix"   { inherit pkgs; };
+          python-data  = import "${self}/shell_definitions/python-data.nix"  { inherit pkgs; };
+          haskell      = import "${self}/shell_definitions/haskell.nix"      { inherit pkgs; };
+          pentesting   = import "${self}/shell_definitions/pentesting.nix"   { inherit pkgs; };
         };
       });
 }
+
+
+
