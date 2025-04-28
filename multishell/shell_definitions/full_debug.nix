@@ -1,16 +1,23 @@
 { pkgs }:
 
 let
-  inherit (import ./common.nix { inherit pkgs; }) networkingTools systemDebugTools;
+  inherit (import ./common.nix { inherit pkgs; }) networkingTools systemDebugTools commonTools;
 
-  commonTools = with pkgs; [ neovim git ];
+  
 in
 pkgs.mkShell {
   name = "full-debug-shell";
   packages = commonTools ++ networkingTools ++ systemDebugTools;
   shellHook = ''
-    export PS1="(full-debug) $PS1"
-    echo "🛠️ Full debug shell: everything is ready!"
+    export STARSHIP_CONFIG="${./snippets/starship-config.toml}"
+    export PS1=""
+
+    if command -v starship >/dev/null; then
+      eval "$(starship init bash)"
+    else
+      echo "⚠️  Starship not found, using fallback prompt"
+      export PS1="[\u@\h \W]\$ "
+    fi
 
     source ${./snippets/exit_gc.sh}
   '';

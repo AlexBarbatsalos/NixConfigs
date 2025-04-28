@@ -1,14 +1,21 @@
 { pkgs }:
 
 let
-  inherit (import ./common.nix { inherit pkgs; })  networkingTools;
+  inherit (import ./common.nix { inherit pkgs; })  networkingTools commonTools;
 in
 pkgs.mkShell {
   name = "networking-shell";
-  packages = networkingTools;
+  packages = networkingTools ++ commonTools;
   shellHook = ''
-    export PS1="(networking) $PS1"
-    echo "🌐 Networking shell: all net tools loaded"
+    export STARSHIP_CONFIG="${./snippets/starship-config.toml}"
+    export PS1=""
+
+    if command -v starship >/dev/null; then
+      eval "$(starship init bash)"
+    else
+      echo "⚠️  Starship not found, using fallback prompt"
+      export PS1="[\u@\h \W]\$ "
+    fi
 
     source ${./snippets/exit_gc.sh}
   '';

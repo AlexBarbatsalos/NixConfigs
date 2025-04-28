@@ -1,15 +1,22 @@
 { pkgs }:
 
 let
-  inherit (import ./common.nix { inherit pkgs; }) systemDebugTools;
+  inherit (import ./common.nix { inherit pkgs; }) systemDebugTools commonTools;
 in
 pkgs.mkShell {
-  name = "system-shell";
-  packages = systemDebugTools;
+  name = "syssi";
+  packages = systemDebugTools ++ commonTools;
   shellHook = ''
-    export PS1="(sysInspect) $PS1"
-    echo "System debug shell: fine-grained inspection tools ready"
-    
+    export STARSHIP_CONFIG="${./snippets/starship-config.toml}"
+    export PS1=""
+
+    if command -v starship >/dev/null; then
+      eval "$(starship init bash)"
+    else
+      echo "⚠️  Starship not found, using fallback prompt"
+      export PS1="[\u@\h \W]\$ "
+    fi
+
     source ${./snippets/exit_gc.sh}
   '';
 }

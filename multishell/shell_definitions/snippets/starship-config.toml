@@ -1,0 +1,43 @@
+
+
+format = """
+$nix_shell$directory $git_branch$git_status $memory_usage
+$character
+"""
+
+[character]
+success_symbol = """
+╰─[α](green) """
+error_symbol = """
+╰─[✗](red) """
+
+# Show the nix-shell name
+[nix_shell]
+disabled = false
+format = "[$name](bold yellow) "
+
+# Show the hostname
+[hostname]
+disabled = false
+format = "[$hostname](bold green) "
+
+# Show git branch if inside a repo
+[git_branch]
+disabled = false
+format = "[ $branch](bold purple) "
+
+# Memory usage
+[memory_usage]
+disabled = false
+threshold = -1 # always show
+format = "[RAM: $ram](bold blue) "
+
+# OPTIONAL: You can add a directory module if you want it inside the prompt (currently not listed)
+[directory]
+disabled = false
+format = "[📁 $path](cyan) "
+
+# Git status (you may want it too)
+[git_status]
+disabled = false
+format = " [$all_status$ahead_behind](red)"
