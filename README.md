@@ -23,3 +23,20 @@ error: The option virtualisation.amazonGuest' does not exist. Definition values:
 error: path '/nix/store/kcmmd6alr3lx56vkf72503h3pxgf6iv4-source/nixos/modules/profiles/amazon-image.nix' does not exist
 ```
 
+
+## Multishell
+
+This directory includes several ephemeral shells for specific purposes.
+
+They can be accessed from within the directory with ```nix develop .#<shell_name>```
+
+| Shell_name | Description |
+| --------   | -------     |
+| default    | very basic packaging |
+| networking | tools related to inspecting network traffic, firewalling, etc. |
+| system_debug | tools for inspecting system behavior |
+| full_debug | networking ++ system_debug |
+| python_ds | several python libraries for Data Science and Machine Learning |
+| haskell | very basic packages for executing haskell source code | 
+| pentesting | networking ++ (several tools specific to pentesting) |
+
