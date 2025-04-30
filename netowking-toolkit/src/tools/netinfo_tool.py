@@ -7,6 +7,10 @@ import json
 def is_wsl():
     return "WSL_INTEROP" in os.environ or "WSLENV" in os.environ
 
+## later for hypervisors
+def is_vm():
+    return True
+
 
 
 ## actual functions for netinfo
@@ -120,15 +124,54 @@ def get_open_ports():
 
 
 def get_firewall_rules():
+    
+    # if --host flag is set, query host system instead.
     if is_wsl():
-        return "[WSL detected — firewall is managed by Windows, not accessible via Linux tools]"
+        try:
+            cmd = [
+                "powershell.exe",
+                "-Command",
+                "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; " +
+                "Get-NetFirewallRule | Where { $_.Enabled -eq 'True' } | " +
+                "Group-Object -Property Direction | Sort-Object Count -Descending | " +
+                "Select-Object Name,Count | Format-Table -AutoSize"
+            ]
+
+            result = subprocess.run(cmd, capture_output=True, text=True, encoding="latin-1")
+            return result.stdout.replace('\r\n', '\n').strip()
+        
+        except Exception as e:
+            return f"[Error querying Windows firewall: {e}]"
+        
+        
     try:
         result = subprocess.run(["iptables", "-L"], capture_output=True, text=True)
         return result.stdout.strip()
     except FileNotFoundError:
         return "[iptables not found — skipping firewall rules]"
+    
+    
 
-def netinfo_summary():
+
+def get_windows_routes():
+    try:
+        cmd = [
+            "powershell.exe",
+            "-Command",
+            "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; " +
+            "Get-NetRoute | Sort-Object DestinationPrefix | " +
+            "Format-Table -Property DestinationPrefix,NextHop,InterfaceAlias,RouteMetric -AutoSize"
+        ]
+        result = subprocess.run(cmd, capture_output=True)
+        try:
+            output = result.stdout.decode('utf-8')
+        except UnicodeDecodeError:
+            output = result.stdout.decode('latin-1')
+        return output.replace('\r\n', '\n').strip()
+    except Exception as e:
+        return f"[Error fetching Windows routes: {e}]"
+
+def netinfo_summary(show_host_info=False):
     print("📡 Network Information Snapshot")
     print("="*40)
 
@@ -147,3 +190,19 @@ def netinfo_summary():
     print("\n🔥 Firewall Rules:")
     print("-"*30)
     print(get_firewall_rules())
+    
+    
+    ## checks for --host flag
+    
+    if show_host_info:
+        if not is_wsl():
+            print("\n[--host ignored — not in WSL]")
+        else:
+            print("\n🪟 Windows Host Firewall Summary")
+            print("=" * 60)
+            print(get_firewall_rules())
+
+            print("\n🗺 Windows Routing Table")
+            print("=" * 60)
+            print(get_windows_routes())
+            

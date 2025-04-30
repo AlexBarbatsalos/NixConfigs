@@ -9,6 +9,7 @@ def main_cli():
 
     # Add subcommands  --> Just examples now
     netinfo_parser = subparsers.add_parser('netinfo', help='Show basic network routing and firewall info')
+    netinfo_parser.add_argument('--host', action='store_true', help='Include host system info (for WSL environments)')    ## handles --host flag
     
     subnet_parser = subparsers.add_parser('subnet-scan', help='Scan local subnet and list active hosts')
 
@@ -19,6 +20,6 @@ def main_cli():
     if args.command == 'subnet-scan':
         subnet_scan.scan_subnet()
     elif args.command == 'netinfo':
-        netinfo_tool.netinfo_summary()
+        netinfo_tool.netinfo_summary(show_host_info=args.host)
     else:
         parser.print_help()
