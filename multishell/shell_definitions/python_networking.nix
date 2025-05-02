@@ -6,6 +6,11 @@ in
 pkgs.mkShell {
   name = "networking-shell";
   packages = networkingTools ++ pythonNetTools ++ commonTools;
+  env = {
+    PYTHONPATH = "./src";
+
+  };
+
   shellHook = ''
     export STARSHIP_CONFIG="${./snippets/starship-config.toml}"
     export PS1=""

@@ -1,6 +1,7 @@
 import subprocess
 import os
 import json
+from utils.formatting_utils import print_colored_title, print_table, print_error
 
 # Helper functions --> could be a separate module later!!
 ## checks if system is wsl (just as placeholder for now)
@@ -58,7 +59,7 @@ def get_routing_table():
         for entry in entries:
             print(f"{entry['dst']:<18} {entry['gateway']:<18} {entry['dev']:<10} {entry['src']:<18} {entry['scope']:<8} {entry['proto']}")
 
-    output_lines = ["🌐 Routing Table", "="*30]
+    output_lines = ["Routing Table", "="*30]
 
     if groups["default"]:
         print_group("Default Route", groups["default"])
@@ -172,22 +173,22 @@ def get_windows_routes():
         return f"[Error fetching Windows routes: {e}]"
 
 def netinfo_summary(show_host_info=False):
-    print("📡 Network Information Snapshot")
+    print_colored_title("Network Information Snapshot")
     print("="*40)
 
-    print("\n🔀 Routing Table:")
+    print_colored_title("\nRouting Table:")
     print("-"*30)
     get_routing_table()
 
-    print("\n🌐 Interfaces:")
+    print_colored_title("\n\nInterfaces:")
     print("-"*30)
     print(get_interfaces())
     
-    print("\n🛠️ Open Ports:")
+    print_colored_title("\n\nOpen Ports:")
     print("-"*30)
     print(get_open_ports())
 
-    print("\n🔥 Firewall Rules:")
+    print_colored_title("\n\n Firewall Rules:")
     print("-"*30)
     print(get_firewall_rules())
     
@@ -202,7 +203,7 @@ def netinfo_summary(show_host_info=False):
             print("=" * 60)
             print(get_firewall_rules())
 
-            print("\n🗺 Windows Routing Table")
+            print_colored_title("\n🗺 Windows Routing Table")
             print("=" * 60)
             print(get_windows_routes())
             

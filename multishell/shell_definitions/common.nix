@@ -21,6 +21,7 @@
       netaddr     # IP address manipulation
       websockets  # Async WebSocket client/server
       pyshark     # Wireshark wrapper for packet captures
+      rich        # for formatting
     ]))
   ];
 
