@@ -2,7 +2,7 @@ import subprocess
 import json
 import re
 import socket
-from utils.formatting_utils import print_colored_title, print_table, print_error
+from utils.formatting_utils import print_colored_title, print_table, print_error, loading_spinner
 
 
 
@@ -71,7 +71,8 @@ def scan_subnet():
         print_error("[Could not detect local subnet]")
         return
 
-    print(f"Scanning subnet: {subnet}")
+    with loading_spinner(f"Scanning subnet: {subnet}"):
+        result = subprocess.run(["nmap", "-sn", subnet], capture_output=True, text=True, check=True)
     try:
         result = subprocess.run(["nmap", "-sn", subnet], capture_output=True, text=True, check=True)
     except Exception as e:
@@ -81,7 +82,7 @@ def scan_subnet():
     hosts = parse_nmap_output(result.stdout)
 
     if not hosts:
-        print("No active hosts found.")
+        print_error("No active hosts found.")
         return
 
     print_colored_title("\nSubnet Scan Results")

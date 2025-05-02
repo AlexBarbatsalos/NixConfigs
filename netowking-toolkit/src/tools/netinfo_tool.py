@@ -1,7 +1,7 @@
 import subprocess
 import os
 import json
-from utils.formatting_utils import print_colored_title, print_table, print_error
+from utils.formatting_utils import print_colored_title, print_table, print_error, loading_spinner
 
 # Helper functions --> could be a separate module later!!
 ## checks if system is wsl (just as placeholder for now)

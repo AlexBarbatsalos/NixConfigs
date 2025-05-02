@@ -1,5 +1,8 @@
 import subprocess
 import shutil
+import json
+from utils.formatting_utils import loading_spinner, print_error, print_cancel
+from .display import parse_tcpdump_line
 
 def inspect_connection(ip, port, mode="live", count=25):
     """
@@ -8,14 +11,14 @@ def inspect_connection(ip, port, mode="live", count=25):
     mode: "live" or "snapshot"
     count: number of packets to show (for snapshot)
     """
-    print(f"\nInspecting connection to {ip}:{port} [{mode} mode]")
+    
     
     tcpdump_path = shutil.which("tcpdump")
     if tcpdump_path is None:
-        print("[ERROR] tcpdump not found in PATH.")
+        print_error("[ERROR] tcpdump not found in PATH.")
         return
 
-    cmd = [tcpdump_path, "-n", "host", ip, "and", "port", str(port)]
+    cmd = [tcpdump_path, "-vvn","-l", "host", ip, "and", "port", str(port)]
 
     if mode == "snapshot":
         cmd.insert(1, "-c")
@@ -25,13 +28,24 @@ def inspect_connection(ip, port, mode="live", count=25):
         
     cmd.insert(0, "sudo")
 
-    print(f"\n[Running command: {' '.join(cmd)}]\n")
+    print(f"\nInspecting connection to {ip}:{port} [{mode} mode]...\n\n")
+    
+    
+    
+    #### This has to be reworked visually!! And maybe some fields have to be added
+    print("Source IP           Target IP           Type     Size")
+    print("-" * 55)
+    
     try:
-        subprocess.run(cmd)
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        for line in process.stdout:
+            parsed_data = parse_tcpdump_line(line)
+            if parsed_data:
+                print(f"{parsed_data['SourceIP']:<18} {parsed_data['TargetIP']:<18} {parsed_data['Type']:<8} {parsed_data['Size']}")
     except KeyboardInterrupt:
-        print("\nLive capture stopped.")
+        print_cancel("\nLive capture stopped.")
     except Exception as e:
-        print(f"[Error running tcpdump: {e}]")
+        print_error(f"[Error running tcpdump: {e}]")
 
 
 
@@ -43,7 +57,7 @@ def trace_connection(ip):
     
     traceroute_path = shutil.which("traceroute")
     if traceroute_path is None:
-        print("[ERROR] traceroute not found in PATH.")
+        print_error("[ERROR] traceroute not found in PATH.")
         return
 
     cmd = ["sudo", traceroute_path, "-n", ip]
@@ -52,21 +66,21 @@ def trace_connection(ip):
     try:
         subprocess.run(cmd)
     except KeyboardInterrupt:
-        print("\nTrace stopped.")
+        print_cancel("\nTrace stopped.")
     except Exception as e:
-        print(f"[Error running traceroute: {e}]")
+        print_error(f"[Error running traceroute: {e}]")
         
 
 def inspect_certificate(ip, port):
     """
     Inspect TLS certificate chain for a given IP and port using openssl.
     """
-    print(f"\n\U0001F511 Inspecting TLS certificate chain for {ip}:{port}\n")
+    print(f"Inspecting TLS certificate chain for {ip}:{port}\n")
 
     cmd = ["openssl", "s_client", "-connect", f"{ip}:{port}", "-servername", ip, "-showcerts"]
     try:
         subprocess.run(cmd)
     except KeyboardInterrupt:
-        print("\nCertificate inspection cancelled.")
+        print_cancel("\nCertificate inspection cancelled.")
     except Exception as e:
-        print(f"[Error running openssl: {e}")
+        print_error(f"[Error running openssl: {e}")
