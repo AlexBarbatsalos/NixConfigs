@@ -2,6 +2,7 @@ import argparse
 from utils.ascii_utils import print_logo
 from tools import netinfo_tool, subnet_scan
 from tools.connwatch import main as connwatch_main
+from tools.remote_int import remote_int
 
 
 def main_cli():
@@ -16,6 +17,9 @@ def main_cli():
     subnet_parser = subparsers.add_parser('subnet-scan', help='Scan local subnet and list active hosts')
     
     connwatch_parser = subparsers.add_parser('connwatch', help='Monitor and inspect active WAN connections')
+    
+    remote_parser = subparsers.add_parser('remote-int', help='Inspect remote IP metadata')
+    remote_parser.add_argument('ip', help='Target IP address')
 
     
     
@@ -30,5 +34,7 @@ def main_cli():
         netinfo_tool.netinfo_summary(show_host_info=args.host)
     elif args.command == 'connwatch':
         connwatch_main()
+    elif args.command == 'remote-int':
+        remote_int(args.ip)
     else:
         parser.print_help()

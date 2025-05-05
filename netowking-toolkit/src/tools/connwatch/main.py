@@ -1,6 +1,6 @@
 from .connections import get_active_connections
 from .inspect import inspect_connection, trace_connection, inspect_certificate
-from utils.formatting_utils import print_colored_title, print_table, print_error
+from utils.formatting_utils import print_colored_title, print_error
 
 
 

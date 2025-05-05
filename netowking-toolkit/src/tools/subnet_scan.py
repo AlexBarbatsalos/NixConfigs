@@ -2,7 +2,7 @@ import subprocess
 import json
 import re
 import socket
-from utils.formatting_utils import print_colored_title, print_table, print_error, loading_spinner
+from utils.formatting_utils import print_colored_title, print_error, loading_spinner
 
 
 

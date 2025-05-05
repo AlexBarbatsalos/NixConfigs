@@ -23,16 +23,19 @@ def print_colored_title(title: str):
 def print_section_divider(label: str):
     console.print(f"[bold green]\n{label}[/bold green]\n" + "=" * 60)
 
-def print_table(headers, rows):
-    table = Table(show_header=True, header_style="bold magenta")
-    for header in headers:
-        table.add_column(header)
-    for row in rows:
-        table.add_row(*row)
-    console.print(table)
+
     
 def print_error(error: str):
     console.print((f"\n[bold red]{error}[/bold red]"))
     
 def print_cancel(message: str):
     console.print((f"\n[bold yellow]{message}[/bold yellow]"))
+    
+    
+## padding/structural formatting
+
+def print_summary_row(label, value, label_color="cyan", value_color="white", pad=22):
+    """Prints a summary row with aligned columns and color."""
+    label_text = Text(label.ljust(pad), style=label_color)
+    value_text = Text(value, style=value_color)
+    console.print(label_text + value_text)
