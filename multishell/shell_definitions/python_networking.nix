@@ -8,6 +8,7 @@ pkgs.mkShell {
   packages = networkingTools ++ pythonNetTools ++ commonTools;
   env = {
     PYTHONPATH = "./src";
+    PATH = "${pkgs.tcpdump}/bin:$PATH";
 
   };
 

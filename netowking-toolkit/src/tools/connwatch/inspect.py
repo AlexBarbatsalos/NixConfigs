@@ -1,8 +1,26 @@
 import subprocess
 import shutil
+import os
 import json
 from utils.formatting_utils import loading_spinner, print_error, print_cancel
 from .display import parse_tcpdump_line
+
+
+
+### helpers
+
+def get_default_interface():
+    import re
+    try:
+        result = subprocess.run(["ip", "route", "get", "8.8.8.8"], capture_output=True, text=True)
+        match = re.search(r'dev (\w+)', result.stdout)
+        return match.group(1) if match else None
+    except Exception:
+        return None
+    
+    
+
+### actual utilities
 
 def inspect_connection(ip, port, mode="live", count=25):
     """
@@ -14,39 +32,55 @@ def inspect_connection(ip, port, mode="live", count=25):
     
     
     tcpdump_path = shutil.which("tcpdump")
-    if tcpdump_path is None:
-        print_error("[ERROR] tcpdump not found in PATH.")
+    print(f"[DEBUG] tcpdump_path: {tcpdump_path}")                          ###debug
+    if not tcpdump_path:
+        print_error("[ERROR] tcpdump not found.")
         return
 
-    cmd = [tcpdump_path, "-vvn","-l", "host", ip, "and", "port", str(port)]
+    
+    iface = get_default_interface()
+    if not iface:
+        print_error("[ERROR] Could not determine network interface.")
+        return
+    
+    cmd = ["sudo", tcpdump_path]
 
     if mode == "snapshot":
-        cmd.insert(1, "-c")
-        cmd.insert(2, str(count))
-    else:
-        cmd.insert(1, "-l")
-        
-    cmd.insert(0, "sudo")
+        cmd += ["-c", str(count)]
 
-    print(f"\nInspecting connection to {ip}:{port} [{mode} mode]...\n\n")
-    
-    
-    
-    #### This has to be reworked visually!! And maybe some fields have to be added
-    print("Source IP           Target IP           Type     Size")
-    print("-" * 55)
-    
+    cmd += [
+        "-i", iface,                                                 
+        "-n", "-l", "-tttt",
+        "host", ip, 
+        "and", "port", str(port)                        
+]
+
+   
+
+    print(f"\nInspecting connection to {ip}:{port} [{mode} mode]\n")
+    print(f"{'Time':<15} {'Source':<21} {'Destination':<21} {'Flags':<10} {'Len'}")
+    print("-" * 75)
+
     try:
+        print("[DEBUG] Final command:", " ".join(cmd))
+        print(f"[DEBUG] tcpdump_path: {tcpdump_path}")
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        for line in process.stdout:
-            parsed_data = parse_tcpdump_line(line)
-            if parsed_data:
-                print(f"{parsed_data['SourceIP']:<18} {parsed_data['TargetIP']:<18} {parsed_data['Type']:<8} {parsed_data['Size']}")
-    except KeyboardInterrupt:
-        print_cancel("\nLive capture stopped.")
-    except Exception as e:
-        print_error(f"[Error running tcpdump: {e}]")
+        stdout, stderr = process.communicate()                                                              ####debug start
 
+        print("[DEBUG] STDERR:")
+        print(stderr)
+
+        print("[DEBUG] STDOUT:")
+        print(stdout)                                                                                       ####### debug end
+        
+        for line in process.stdout:
+            parsed = parse_tcpdump_line(line)
+            if parsed:
+                print(f"{parsed['Time']:<15} {parsed['Source']:<21} {parsed['Destination']:<21} {parsed['Flags']:<10} {parsed['Length']}")
+    except KeyboardInterrupt:
+        print("\nCapture Stopped.")
+    except Exception as e:
+        print_error(f"[ERROR] {e}")
 
 
 def trace_connection(ip):

@@ -4,32 +4,25 @@ import re
 
 def parse_tcpdump_line(line):
     """
-    Parse a single line of tcpdump output and extract relevant fields.
+    Extract structured data from a tcpdump line.
     """
-    # Skip header lines
-    if "listening on" in line or len(line.strip()) == 0:
-        return None
+    # Sample line (customize if needed):
+    # 12:34:56.789012 IP 192.168.1.10.12345 > 8.8.8.8.53: Flags [S], seq 123, win 29200, length 0
+    regex = (
+        r'^(?P<timestamp>\d{2}:\d{2}:\d{2}\.\d+)\s+'
+        r'IP\s+(?P<src_ip>[\d.]+)\.(?P<src_port>\d+)\s+>\s+'
+        r'(?P<dst_ip>[\d.]+)\.(?P<dst_port>\d+):\s+'
+        r'(Flags\s+\[(?P<flags>[^\]]+)\],\s+)?'
+        r'.*length\s+(?P<length>\d+)'
+    )
 
-    # Extract IP addresses and ports
-    ip_pattern = r"(\d+\.\d+\.\d+\.\d+)\.(\d+) > (\d+\.\d+\.\d+\.\d+)\.(\d+)"
-    ip_match = re.search(ip_pattern, line)
-    
-    if not ip_match:
-        return None
-
-    # Extract flags
-    flags_pattern = r"Flags \[([^\]]+)\]"
-    flags_match = re.search(flags_pattern, line)
-    
-    # Extract length
-    length_pattern = r"length (\d+)"
-    length_match = re.search(length_pattern, line)
-
-    if ip_match:
+    match = re.match(regex, line)
+    if match:
         return {
-            "SourceIP": f"{ip_match.group(1)}:{ip_match.group(2)}",
-            "TargetIP": f"{ip_match.group(3)}:{ip_match.group(4)}",
-            "Type": flags_match.group(1) if flags_match else "Unknown",
-            "Size": int(length_match.group(1)) if length_match else 0
+            "Time": match.group("timestamp"),
+            "Source": f"{match.group('src_ip')}:{match.group('src_port')}",
+            "Destination": f"{match.group('dst_ip')}:{match.group('dst_port')}",
+            "Flags": match.group("flags") or "-",
+            "Length": match.group("length")
         }
     return None
