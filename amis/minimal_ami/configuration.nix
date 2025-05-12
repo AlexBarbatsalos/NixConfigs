@@ -1,16 +1,6 @@
 { config, pkgs, lib, diskSize, ... }:
 
 
-let
-  envFile = builtins.readFile ./.env;                 ### set up your own .env file locally or use environment variables directly
-  envVars = builtins.listToAttrs (map (line:
-    let parts = builtins.match "([^=]+)=(.*)" line;
-    in {
-      name = builtins.elemAt parts 0;
-      value = builtins.elemAt parts 1;
-    }) (lib.splitString "\n" envFile));
-in
-
 { 
 
 
@@ -86,7 +76,7 @@ in
   password = "$6$EhOT71ytUDRv4sVt$4I0l7uIPRV0nE4a5sVT.zH.W.QyCCeE1xbZSM8wvs2HSITdMI0bRA9xmbT6dBvBQm9iNztnEbWy9QkRG4MxxY.";  
   };
 
-  users.users.root.password ="$6$JFx3nWOb8k.8AgJp$wOsynQlJ98caIoP67IPjWEYAr9ZGzBt32WgwrE1H82Le9ZuKz9HkI4GGF4siAYbGwm/HmVx0ZhR1bg8p5vSqB/";
+  users.users.root.password ="$6$2IHU0GXwNGJw5nla$jRbTCuLfw4V6cEtbuRU5b5VPv1dsRIJPhHQIAZlNaXKGJ9SPbScuPC4zu7D7dlUiI3aJCoSPj33b44oAGFbx8.";
 
 
   system.stateVersion = "24.05";
