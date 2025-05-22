@@ -13,10 +13,14 @@ pkgs.mkShell {
     if command -v starship >/dev/null; then
       eval "$(starship init bash)"
     else
-      echo "⚠️  Starship not found, using fallback prompt"
+      echo "󰀧  Starship not found, using fallback prompt"
       export PS1="[\u@\h \W]\$ "
     fi
+    
 
-    source ${./snippets/exit_gc.sh}
+    echo " Switching to relaxed dev firewall..."
+    toggle-firewall.sh dev
+
+    source ${./snippets/exit_gc.sh} 
   '';
 }
