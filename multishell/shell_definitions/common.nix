@@ -8,7 +8,12 @@
 
   systemDebugTools = with pkgs; [
     strace lsof btop dool atop sysstat procps
-    gdb
+    gdb perf-tools trace-cmd kernelshark bcc bpftrace
+    kmod systemd xfsprogs btrfs-progs inotify-tools
+    e2fsprogs
+    nettools
+    psutils psmisc schedtool numactl
+    inotify-tools fswatch
   ];
 
   commonTools = with pkgs; [ neovim git starship];
