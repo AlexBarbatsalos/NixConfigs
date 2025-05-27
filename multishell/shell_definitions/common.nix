@@ -16,5 +16,19 @@
     inotify-tools fswatch
   ];
 
+
+  pythonNetTools = with pkgs; [
+    (python3.withPackages (ps: with ps; [
+      requests    # HTTP client
+      scapy       # Packet crafting/sniffing
+      dnspython   # DNS queries
+      paramiko    # SSH connections
+      netaddr     # IP address manipulation
+      websockets  # Async WebSocket client/server
+      pyshark     # Wireshark wrapper for packet captures
+      rich        # for formatting
+    ]))
+  ];
+
   commonTools = with pkgs; [ neovim git starship];
 }

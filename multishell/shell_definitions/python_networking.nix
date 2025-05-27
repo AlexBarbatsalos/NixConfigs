@@ -1,16 +1,18 @@
 { pkgs }:
 
-let 
-  inherit (import ./common.nix { inherit pkgs; }) commonTools;
-  
-  haskell_stack = with pkgs; [ stack ghc git ];
+let
+  inherit (import ./common.nix { inherit pkgs; })  networkingTools pythonNetTools commonTools;
+in
+pkgs.mkShell {
+  name = "networking-shell";
+  packages = networkingTools ++ pythonNetTools ++ commonTools;
+  env = {
+    PYTHONPATH = "./src";
+    PATH = "${pkgs.tcpdump}/bin:$PATH";
 
-in 
+  };
 
-pkgs.mkShell{
-    name = "lambda";
-    packages = haskell_stack ++ commonTools;
-    shellHook = ''
+  shellHook = ''
     export STARSHIP_CONFIG="${./snippets/starship-config.toml}"
     export PS1=""
 
@@ -23,4 +25,4 @@ pkgs.mkShell{
 
     source ${./snippets/exit_gc.sh}
   '';
-    }
+}
